@@ -52,13 +52,16 @@ const OTPVerificationPage = () => {
 
     try {
       // Make API call to verify OTP
-      const response = await fetch("http://localhost:5000/api/auth/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, otp }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/auth/verify-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, otp }),
+        }
+      );
 
       const result = await response.json();
 
@@ -73,7 +76,7 @@ const OTPVerificationPage = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("OTP verification error:", error);
-      setVerificationError(error?.message || "Invalid OTP. Please try again.");
+      setVerificationError("Invalid OTP. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -10,6 +10,7 @@ import {
   message,
 } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -19,6 +20,11 @@ const OTPVerificationPage = () => {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [verificationError, setVerificationError] = useState("");
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const { email } = location.state || {};
+  console.log("email", email);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -30,23 +36,48 @@ const OTPVerificationPage = () => {
   };
 
   // Handle OTP submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!email) {
+      setVerificationError("Email not found. Please register again.");
+      return;
+    }
+
+    if (otp.length !== 6) {
+      setVerificationError("Please enter a 6-digit OTP code.");
+      return;
+    }
+
     setIsLoading(true);
     setVerificationError("");
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      if (otp.length === 6) {
-        // Success case - replace with your actual verification logic
-        console.log("OTP verified successfully");
-        message.success("Verification successful!");
-      } else {
-        setVerificationError("Invalid OTP. Please enter a 6-digit code.");
-      }
-    }, 1500);
-  };
+    try {
+      // Make API call to verify OTP
+      const response = await fetch("http://localhost:5000/api/auth/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otp }),
+      });
 
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "OTP verification failed");
+      }
+
+      console.log("OTP verified successfully", result);
+      message.success("Verification successful!");
+
+      // Redirect to dashboard or home page after successful verification
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      setVerificationError(error?.message || "Invalid OTP. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // Handle resend OTP
   const handleResendOTP = () => {
     setTimeLeft(60); // Reset to 5 minutes

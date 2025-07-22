@@ -53,7 +53,7 @@ const LoginPage: React.FC = () => {
     console.log("Received values of form:", data);
 
     try {
-      const response = await fetch("http://localhost:5000/api/login", {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

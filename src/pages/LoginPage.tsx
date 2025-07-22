@@ -21,7 +21,17 @@ const loginSchema = yup.object({
     .string()
     .email("please enter valid email")
     .required("Please input your Email!"),
-  password: yup.string().required("Please enter your Password!"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
+    .matches(
+      /[^a-zA-Z0-9]/,
+      "Password must contain at least one special character"
+    ),
   remember: yup.boolean().required(),
 });
 
@@ -39,8 +49,29 @@ const LoginPage: React.FC = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<LoginForm> = (data) => {
+  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     console.log("Received values of form:", data);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Success:", result);
+      // Handle successful login (e.g., redirect, store token, etc.)
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle errors (e.g., show error message to user)
+    }
   };
 
   return (

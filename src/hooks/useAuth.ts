@@ -1,5 +1,5 @@
 // hooks/useAuth.ts
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export function useAuth() {
   const [isLoading, setLoading] = useState(true);
@@ -8,8 +8,8 @@ export function useAuth() {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const res = await fetch('/api/session', {
-          credentials: 'include', // Important: send cookies
+        const res = await fetch('"http://localhost:5000/api/users/profil"', {
+          credentials: "include",
         });
 
         if (res.ok) {

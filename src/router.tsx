@@ -8,6 +8,8 @@ import DashboardLayout from "./layouts/DashboardLayout";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const Register = lazy(() => import("./pages/RegisterPage"));
+const OTP = lazy(() => import("./pages/OTPVerification"));
+
 const Dashboard = lazy(() => import("./pages/DashboardPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -37,6 +39,10 @@ export const router = createBrowserRouter([
       {
         path: "register",
         element: withSuspense(<Register />),
+      },
+      {
+        path: "otp",
+        element: withSuspense(<OTP />),
       },
     ],
   },

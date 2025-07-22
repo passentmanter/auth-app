@@ -4,7 +4,7 @@ import { MailOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import registerImage from "./assets/register-image.svg"; // Image kept
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -53,10 +53,37 @@ const RegisterPage: React.FC = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<RegisterForm> = (data) => {
+  // Inside your component
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<RegisterForm> = async (data) => {
     console.log("Registration data:", data);
-    message.success("Registration successful!");
-    // You can send data to backend here
+
+    try {
+      const response = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Success:", result);
+      message.success("Registration successful!");
+
+      // Redirect to OTP route with email state
+      navigate("/otp", {
+        state: { email: result.email },
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      message.error("Registration failed. Please try again.");
+    }
   };
 
   return (
